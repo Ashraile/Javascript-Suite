@@ -6,10 +6,11 @@ Object.prototype.hasOwnProperty || (function() {
             throw new TypeError('Object.prototype.hasOwnProperty called on' + this);
         }
         var O = Object(this), key = String(prop);
-      
-        var _proto = (function(){ try { return O.__proto__ || O.constructor.prototype } catch(e){} })() || {}; // Object.prototype
+        
+        // handles O.constructor being undefined
+        var _proto_ = (function(){ try { return O.__proto__ || O.constructor.prototype } catch(e){} })() || {}; // Object.prototype
 
-        return key in O && (!(key in _proto) || O[key] !== _proto[key]);
+        return key in O && (!(key in _proto_) || O[key] !== _proto_[key]);
     }
 
     try { 
