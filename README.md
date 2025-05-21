@@ -7,7 +7,7 @@ Examples: `Object.prototype.hasOwnProperty`, `detectIE`, `globalThis`, `document
 is.js: 
 
 ```javascript
-/// is.js
+/// is.js: Checks all arguments for strict equality, including NaN and -0;
 
 console.log(is(NaN, NaN, NaN)); // true
 console.log(is(null, undefined)); // false
