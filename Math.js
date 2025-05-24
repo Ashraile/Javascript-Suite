@@ -259,13 +259,13 @@ define.const = function(obj, prop, value, overwrite) {
         if (n !== n || n < 1) { return NaN }
         if (n === 1) { return 0 }
         if (n === Infinity) { return n }
-
+        
         var sqrtInvNSquared = Math.sqrt(1 - (1 / (n * n)));
-        var halfn = n / 2;
-
-        if (n < 2) { return Math.log1p(n - 1 + (sqrtInvNSquared * n)) }
-
-        return Math.log1p(halfn + (sqrtInvNSquared * halfn) - 1) + (1 / Math.LOG2E);
+        var halfn = n / 2;  
+        
+        return (n < 2) ? 
+            Math.log1p(n - 1 + (sqrtInvNSquared * n)) :
+            Math.log1p(halfn + (sqrtInvNSquared * halfn) - 1) + (1 / Math.LOG2E);
     }
 
     function asinh(n) { 
