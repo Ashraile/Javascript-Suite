@@ -57,14 +57,17 @@ var define = (function(e, c, w) {
     if (V8_PROTOTYPE_DEFINE_BUG) {
         Object.defineProperty(Object, 'defineProperty', {
             writable: true, 
-            configurable: true, 
+            configurable: true, // enumerable: false
             value: (function($) {
                 return function defineProperty(O, key, options) {
-                    // typechecking is not necessary as the original function will handle any bad parameters.
-                    if (typeof O === 'function' && key === 'prototype' && 'value' in options && w in options && !options[w]) {
-                        var current = Object.getOwnPropertyDescriptor(O, key);
-                        if (current && current[w]) {
-                            O[key] = options.value;
+                    // Typechecking is not necessary as the original function will handle any bad parameters.
+                    // Skip ('writable' in options) check: false negative when enumerable properties are set to nonenumerable by leaving 'writable' out of options object
+                    if (typeof O === 'function' && key === 'prototype' && 'value' in options && !options[w]) {
+                        var current = Object.getOwnPropertyDescriptor(O, key); // can return undefined if no key exists.
+                        if (current && current[w]) { // object is currently writable
+                            try {
+                                O[key] = options.value;
+                            } catch (e) {}
                             options = {
                                 enumerable: (e in options) ? options[e] : current[e],
                                 configurable: (c in options) ? options[c] : current[c],
