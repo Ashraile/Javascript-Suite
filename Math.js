@@ -1,3 +1,6 @@
+// Math.js
+// Dependencies: Object.prototype.hasOwnProperty, Function.prototype.call, Number.MAX_VALUE, Number.EPSILON
+
 /*
  * Checks all arguments for strict equality, including NaN and -0;
  */
