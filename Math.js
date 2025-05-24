@@ -226,9 +226,19 @@ define.const = function(obj, prop, value, overwrite) {
         'log1p': log1p, 'log2': log2, 'sign': sign, 'sinh': sinh, 'tanh': tanh, 'trunc': trunc
 
     }, NON_ENUM, function overwriteIfBuggyOrUndefined(key) {    
+
+        function withinULPDistance(result, expected) {
+            return Math.abs(1 - (result / expected)) < 8 * Number.EPSILON;
+        }
         switch (key) {
             case 'abs'  : { return isNegativeZero(this(-0)) }
-            case 'acosh': { return this(Infinity) !== Infinity || !is(710, floor(this(Number.MAX_VALUE))) }
+            case 'acosh': { 
+                return (
+                    this(Infinity) !== Infinity || 
+                    !is(710, floor(this(Number.MAX_VALUE))) ||
+                    withinULPDistance(this(1 + Number.EPSILON), Math.sqrt(2 * Number.EPSILON)) // Chrome < 54 has an inaccurate acosh for EPSILON deltas
+                );
+            }
             case 'asinh': { return isNegativeZero(this(0)) }
             case 'atanh': { return !(1 / this(-0) < 0) }
             case 'cosh' : { return this(710) === Infinity }
@@ -244,10 +254,18 @@ define.const = function(obj, prop, value, overwrite) {
         n = +n; return (n === 0) ? 0 : (n < 0) ? -n : n;
     }
 
-    function acosh(n) { 
-        n = +n; 
-        return n < 1 ? NaN : n > 94906265.62425156 ?
-            Math.log(n) + Math.LN2 : Math.log1p(n - 1 + Math.sqrt(n-1) * Math.sqrt(n+1));
+    function acosh(n) { // return Math.log(n + Math.sqrt(n * n - 1));
+        n = +n;
+        if (n !== n || n < 1) { return NaN }
+        if (n === 1) { return 0 }
+        if (n === Infinity) { return n }
+
+        var sqrtInvNSquared = Math.sqrt(1 - (1 / (n * n)));
+        var halfn = n / 2;
+
+        if (n < 2) { return Math.log1p(n - 1 + (sqrtInvNSquared * n)) }
+
+        return Math.log1p(halfn + (sqrtInvNSquared * halfn) - 1) + (1 / Math.LOG2E);
     }
 
     function asinh(n) { 
