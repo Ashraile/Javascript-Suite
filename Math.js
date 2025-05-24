@@ -49,7 +49,7 @@ var define = (function(e, c, w) {
         try { return (Object.defineProperty({}, 1, { get: function() {return 7} })[1]) === 7; } catch (e) {}
     })();
 
-    /// V8 ~ Chrome 36- | https://bugs.chromium.org/p/v8/issues/detail?id=3334
+    /// V8 ~ Chrome ~15- to 36 | https://bugs.chromium.org/p/v8/issues/detail?id=3334
     var V8_PROTOTYPE_DEFINE_BUG = SUPPORTS_DESCRIPTORS && 
         Object.defineProperty(function(){}, 'prototype', { value: 42, writable: false }).prototype !== 42;
         
