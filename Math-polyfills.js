@@ -17,6 +17,10 @@ function is() {
     return true;
 }
 
+function isNegativeZero(x) {
+    return is(-0, x);
+}
+
 var NON_ENUM = { writable: true, configurable: true }; // enumerable: false;
 
 /*  
