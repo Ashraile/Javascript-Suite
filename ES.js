@@ -32,7 +32,7 @@ var ES = (function() {
     function isCallable(value) {
         // if (isDDA(value)) { return true }
         if (!value || (typeof value !== 'function' && typeof value !== 'object') || isES6ClassFn(value)) { return false }
-        return tryMethodCall(value, $FPTS, '[object Function]', '[object GeneratorFunction');
+        return tryMethodCall(value, $FPTS, '[object Function]', '[object GeneratorFunction]');
     }
 
     function isDDA(value) {
