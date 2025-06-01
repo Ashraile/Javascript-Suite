@@ -21,7 +21,7 @@ var ES = (function() {
         return (
             (str === '[object Arguments]') ||
             (str !== '[object Array]'
-                && typeof value === 'object' && value
+                && typeof value === 'object' && !!value
                 && typeof value.length === 'number'
                 && value.length >= 0
                 && isCallable(value.callee)
@@ -63,7 +63,14 @@ var ES = (function() {
         return value == null || (typeof value !== 'object' && typeof value !== 'function');
     }
 
-    function isArray(v) { 
+    function isWindow(value) {
+        if (!value || typeof value !== 'object' || typeof value.document !== 'object') { return false }
+        // If a program "defines" a custom windoc, that will be used as a defacto window reference.
+        var $window = (typeof window === 'object' && window && typeof window.document === 'object') ? window : undefined;
+        return $OPTS.call(value) === '[object Window]' || value == $window; // IE<9 window.window fails strict equality, but here == matches ===
+    }
+
+    function isArray(v) {
         return Array.isArray ? Array.isArray(v) : $OPTS.call(v) === '[object Array]';
     }
 
@@ -77,8 +84,8 @@ var ES = (function() {
         return true;
     }
 
-    function ToNumber(v) { return +v } // ToNumber | Never used, as inlining is faster | Unary operator (+) throws TypeError on (BigInt, Symbol) primitives as per the spec. Number() constructor does not.
-    function ToUint32(v) { return v >>> 0 } // ToUint32 | Never used, as inlining is faster
+    function ToNumber(v) { return +v } // Never used, as inlining is faster | Unary operator (+) throws TypeError on (BigInt, Symbol) primitives as per the spec. Number() constructor does not.
+    function ToUint32(v) { return v >>> 0 } // Inlining is faster
 
     // https://tc39.es/ecma262/#sec-toobject
     function ToObject(v) {
@@ -116,8 +123,10 @@ var ES = (function() {
 
     return {
         is: is, isActualNaN: isActualNaN, isArguments: isArguments, isArray: isArray, isCallable: isCallable, isDDA: isDDA, isES6ClassFn: isES6ClassFn, 
-        isPrimitive: isPrimitive, isNullish: isNullish, isString: isString, isRegex: isRegex, 
-        ToObject: ToObject, ToNumber: ToNumber, ToUint32: ToUint32, ToInteger: ToInteger, ToPrimitive: ToPrimitive
+        isPrimitive: isPrimitive, isNullish: isNullish, isString: isString, isRegex: isRegex, isWindow: isWindow,
+        ToObject: ToObject, ToNumber: ToNumber, ToUint32: ToUint32, ToInteger: ToInteger, ToPrimitive: ToPrimitive, ToSoftInteger: ToSoftInteger
     };
 
 })();
+
+if (typeof module === 'object' && typeof module.exports === 'object') { module.exports = ES }
